@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Sign In / Log In with Gmail Option</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body, html {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    overflow: hidden;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    width: 320px;
+    max-width: 90vw;
+    padding: 30px 25px 40px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+  }
+  h2 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1.2px;
+  }
+  form {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  form.hidden {
+    display: none;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+  }
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  input::placeholder {
+    color: #ddd;
+  }
+  input:focus {
+    background-color: rgba(255,255,255,0.35);
+    outline: none;
+    box-shadow: 0 0 8px 2px #fff6;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: #fff;
+    color: #764ba2;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    user-select: none;
+    margin-bottom: 0;
+  }
+  button:hover {
+    background-color: #53397a;
+    color: #fff;
+  }
+  .form-footer {
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 18px;
+    color: #eee;
+  }
+  .form-footer a {
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  /* Small animation fadeIn */
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(8px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  /* Responsive adjustments */
+  @media (max-width: 360px) {
+    .container {
+      width: 90vw;
+      padding: 25px 20px 35px;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+    }
+    button {
+      padding: 10px;
+      font-size: 0.95rem;
+    }
+  }
+  /* Gmail button styles */
+  .gmail-btn {
+    width: 100%;
+    background: #fff;
+    color: #555;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 10px 0;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+  .gmail-btn:hover {
+    background-color: #f5f5f5;
+  }
+  .gmail-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container" role="main">
+  <h2 id="form-title">Sign In</h2>
+
+  <form id="signin-form" aria-labelledby="form-title" role="form">
+    <label for="signin-username">Username</label>
+    <input type="text" id="signin-username" name="username" placeholder="Your username" required autocomplete="username"/>
+    <label for="signin-email">Email</label>
+    <input type="email" id="signin-email" name="email" placeholder="you@example.com" required autocomplete="email" />
+    <label for="signin-password">Password</label>
+    <input type="password" id="signin-password" name="password" placeholder="Create password" required autocomplete="new-password" />
+    <button type="submit" aria-label="Sign In">Sign In</button>
+    <div class="gmail-btn" id="gmail-signin" role="button" tabindex="0" aria-pressed="false" aria-label="Sign in with Gmail">
+      <svg class="gmail-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path fill="#EA4335" d="M12 11.293l3.5-3.5 5.5 5.5v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7l5.5-5.5 3.5 3.5z"/>
+        <path fill="#34A853" d="M12 11.293l-3.5-3.5L3 13v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5l-5.5-5.5-3.5 3.5z"/>
+        <path fill="#4285F4" d="M3 6l9 7.5L21 6v-.5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v.5z"/>
+        <path fill="#FBBC05" d="M21 6v.5l-9 7.5-9-7.5V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      Sign in with Gmail
+    </div>
+    <p class="form-footer">Already have an account? <a href="#" id="switch-to-login">Log In</a></p>
+  </form>
+
+  <form id="login-form" class="hidden" aria-labelledby="form-title" role="form">
+    <label for="login-email">Email</label>
+    <input type="email" id="login-email" name="email" placeholder="you@example.com" required autocomplete="username" />
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password" name="password" placeholder="Your password" required autocomplete="current-password" />
+    <button type="submit" aria-label="Log In">Log In</button>
+    <p class="form-footer">Don't have an account? <a href="#" id="switch-to-signin">Sign In</a></p>
+  </form>
+</div>
+
+<script>
+  const signinForm = document.getElementById('signin-form');
+  const loginForm = document.getElementById('login-form');
+  const formTitle = document.getElementById('form-title');
+  const switchToLoginLink = document.getElementById('switch-to-login');
+  const switchToSigninLink = document.getElementById('switch-to-signin');
+  const gmailSigninBtn = document.getElementById('gmail-signin');
+
+  function showSignIn() {
+    signinForm.classList.remove('hidden');
+    loginForm.classList.add('hidden');
+    formTitle.textContent = 'Sign In';
+    signinForm.querySelector('input').focus();
+  }
+  function showLogIn() {
+    loginForm.classList.remove('hidden');
+    signinForm.classList.add('hidden');
+    formTitle.textContent = 'Log In';
+    loginForm.querySelector('input').focus();
+  }
+
+  switchToLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showLogIn();
+  });
+  switchToSigninLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSignIn();
+  });
+
+  // Use dynamic backend URL from current window location
+  const backendUrl = (() => {
+    const url = new URL(window.location.href);
+    // Assume backend runs on same hostname but different port, e.g. 3004, 3006, 3007 etc.
+    // Try to detect backend port by checking known ports or fallback to default
+    const knownPorts = [3004, 3006, 3007];
+    for (const port of knownPorts) {
+      if (url.port !== port.toString()) {
+        // We can try to ping or assume this port
+        // For simplicity, just return the first known port different from current port
+        return `http://${url.hostname}:${port}`;
+      }
+    }
+    // fallback
+    return `http://${url.hostname}:3004`;
+  })();
+
+  // Handle sign-in form submission
+  signinForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const username = signinForm['username'].value.trim();
+    const email = signinForm['email'].value.trim();
+    const password = signinForm['password'].value;
+    try {
+      const response = await fetch(`${backendUrl}/signin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Sign In successful! Logging you in now...');
+        // Automatically log in after sign-in
+      const loginResponse = await fetch(`${backendUrl}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const loginData = await loginResponse.json();
+        if (loginResponse.ok) {
+          localStorage.setItem('token', loginData.token);
+          window.location.href = 'index_with_music.html';
+        } else {
+          alert('Auto login failed: ' + loginData.message);
+          showLogIn();
+        }
+      } else {
+        alert('Sign In failed: ' + data.message);
+      }
+    } catch (error) {
+      alert('Error during sign in: ' + error.message);
+    }
+  });
+
+  // Handle login form submission
+  loginForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = loginForm['email'].value.trim();
+    const password = loginForm['password'].value;
+    try {
+      const response = await fetch(`${backendUrl}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Login successful! Welcome, ' + data.username);
+        // Store JWT token in localStorage
+        localStorage.setItem('token', data.token);
+        // Redirect to dashboard after successful login
+        window.location.href = 'index_with_music.html';
+      } else {
+        alert('Login failed: ' + data.message);
+      }
+    } catch (error) {
+      alert('Error during login: ' + error.message);
+    }
+  });
+
+  gmailSigninBtn.addEventListener('click', () => {
+    alert('Sign in with Gmail clicked!');
+  });
+  gmailSigninBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      gmailSigninBtn.click();
+    }
+  });
+  // Add logout function (optional)
+  function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'sign-in_log-in.html';
+  }
+</script>
+</body>
+</html>
+

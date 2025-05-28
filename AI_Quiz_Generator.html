@@ -1,0 +1,601 @@
+AI quizzes
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>AI Quiz Generator - Multi File Upload with Save</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    background: #1e40af; /* dark blue background */
+    color: rgb(255, 255, 255);
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    width: 100vw;
+    padding: 1rem;
+  }
+  h1 {
+    margin: 0.3em 0 1em 0;
+    text-align: center;
+    font-weight: 700;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  }
+  .container {
+    background: linear-gradient(90deg, #000000 0%, #2563eb 100%);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    max-width: 1000px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    overflow: hidden;
+    flex-direction: row;
+    gap: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  label {
+    user-select: none;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    display: block;
+    font-size: 1.1rem;
+  }
+  input[type="file"], input[type="text"] {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5em;
+    border-radius: 10px;
+    border: none;
+    color: #eee;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-family: Roboto, sans-serif;
+  }
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    border-radius: 12px;
+    border: none;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-family: Roboto, sans-serif;
+    resize: vertical;
+    margin-bottom: 1em;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+  select {
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    margin-bottom: 1em;
+    background: rgba(255 255 255 / 0.15);
+    color: rgb(255, 255, 255);
+    font-family: Roboto, sans-serif;
+    user-select: none;
+    cursor: pointer;
+  }
+  button {
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    cursor: pointer;
+    background: #4b7ff1;
+    color: rgb(0, 0, 0);
+    transition: background-color 0.3s ease;
+    user-select: none;
+    margin-top: 0.5em;
+  }
+  button:disabled {
+    background: #4b7ff1;
+    cursor: not-allowed;
+  }
+  button:hover:not(:disabled) {
+    background: #b673c8;
+  }
+  .quiz-section {
+    flex: 1;
+    max-height: 100%;
+    overflow-y: auto;
+    background: rgba(255 255 255 / 0.15);
+    border-radius: 16px;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  .quiz-output {
+    margin-top: 1.5em;
+    background: rgba(255 255 255 / 0.15);
+    border-radius: 16px;
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  .question {
+    background: rgba(94, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1em;
+  }
+  .question h3 {
+    margin-top: 0;
+    font-weight: 700;
+  }
+  ul.options-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  ul.options-list li {
+    margin: 0.4em 0;
+    cursor: pointer;
+  }
+  ul.options-list input[type="radio"] {
+    margin-right: 0.5em;
+    cursor: pointer;
+  }
+  .answer-key {
+    margin-top: 2em;
+    background: rgba(0,0,0,0.25);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .answer-key h2 {
+    margin-top: 0;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+  .answer-key ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+ 
+</style>
+</head>
+<body>
+  <h1>AI Quiz Generator from Your Files</h1>
+  <div class="container" role="main" aria-label="Quiz generator interface">
+    <label for="file-input" id="file-label">Upload Study Material File (TXT, PDF, DOCX, PPTX):</label>
+    <input type="file" id="file-input" accept=".txt,.pdf,.docx,.pptx" aria-describedby="file-label" />
+    
+    <label for="text-input" id="text-label">Or paste your study material text here:</label>
+    <textarea id="text-input" placeholder="Paste your study material here..." aria-describedby="text-label"></textarea>
+    
+    <label for="quiz-length" id="quiz-length-label">Select number of quiz questions:</label>
+    <select id="quiz-length" aria-describedby="quiz-length-label" aria-label="Select quiz length">
+      <option value="20">20</option>
+      <option value="25">25</option>
+      <option value="30">30</option>
+      <option value="35">35</option>
+      <option value="40">40</option>
+      <option value="45">45</option>
+      <option value="50" selected>50</option>
+    </select>
+
+    <label for="save-name">Save current quiz as:</label>
+    <input type="text" id="save-name" placeholder="Enter a name for your quiz" aria-label="Quiz save name" />
+
+    <button id="generate-btn" disabled>Generate Quiz</button>
+    <button id="save-btn" disabled>Save Quiz</button>
+    <div id="quiz-output" class="quiz-output" aria-live="polite" aria-label="Generated quiz questions will appear here"></div>
+    <button id="check-btn" style="display:none;">Check Answers</button>
+    <button id="show-answers-btn" style="display:none;">Show Answer Key</button>
+    <div id="answer-key" class="answer-key" aria-live="polite" aria-label="Answer key will appear here" style="display:none;"></div>
+  </div>
+
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.15.349/build/pdf.min.js"></script>
+  <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptx-parser@1.0.3/dist/pptx-parser.min.js"></script>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const textInput = document.getElementById('text-input');
+    const generateBtn = document.getElementById('generate-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const quizOutput = document.getElementById('quiz-output');
+    const quizLengthSelect = document.getElementById('quiz-length');
+    const answerKeyDiv = document.getElementById('answer-key');
+    const checkBtn = document.getElementById('check-btn');
+    const showAnswersBtn = document.getElementById('show-answers-btn');
+    const savedQuizzesList = document.getElementById('saved-quizzes-list');
+    const saveNameInput = document.getElementById('save-name');
+
+    let currentQuiz = [];
+    let userAnswered = false;
+
+    function updateGenerateBtnState() {
+      generateBtn.disabled = textInput.value.trim().length <= 20;
+      saveBtn.disabled = true;
+      saveNameInput.value = '';
+    }
+
+    function updateSaveBtnState() {
+      saveBtn.disabled = currentQuiz.length === 0 || saveNameInput.value.trim().length === 0 || userAnswered === false;
+    }
+
+    textInput.addEventListener('input', () => {
+      updateGenerateBtnState();
+      resetQuizUI();
+    });
+
+    saveNameInput.addEventListener('input', () => {
+      updateSaveBtnState();
+    });
+
+    fileInput.addEventListener('change', async () => {
+      resetQuizUI();
+      if (!fileInput.files.length) return;
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      if (file.type === "text/plain" || file.name.toLowerCase().endsWith('.txt')) {
+        reader.onload = (e) => {
+          textInput.value = e.target.result;
+          updateGenerateBtnState();
+        };
+        reader.readAsText(file);
+
+      } else if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdfData = new Uint8Array(arrayBuffer);
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.15.349/build/pdf.worker.min.js';
+          const loadingTask = pdfjsLib.getDocument({data: pdfData});
+          const pdf = await loadingTask.promise;
+          let fullText = '';
+          for(let i=1; i <= pdf.numPages; i++){
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + "\\n\\n";
+          }
+          textInput.value = fullText.trim();
+          updateGenerateBtnState();
+        } catch(err) {
+          alert("Error reading PDF file: " + err.message);
+        }
+
+      } else if (
+          file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || 
+          file.name.toLowerCase().endsWith('.docx')
+        ) {
+        reader.onload = async (e) => {
+          try {
+            const arrayBuffer = e.target.result;
+            const result = await mammoth.extractRawText({arrayBuffer});
+            textInput.value = result.value.trim();
+            updateGenerateBtnState();
+          } catch (err) {
+            alert("Error reading DOCX file: " + err.message);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+
+      } else if (file.name.toLowerCase().endsWith('.pptx')) {
+        reader.onload = async (e) => {
+          try {
+            const arrayBuffer = e.target.result;
+            const pptxParser = new window.PptxParser();
+            let data = await pptxParser.parse(arrayBuffer);
+            let pptxText = '';
+            (data.slides || []).forEach(slide => {
+              (slide.text || []).forEach(t => {
+                pptxText += t + ' ';
+              });
+              pptxText += "\\n\\n";
+            });
+            textInput.value = pptxText.trim();
+            updateGenerateBtnState();
+          } catch(err) {
+            alert("Error reading PPTX file: " + err.message);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        alert("Unsupported file type. Please upload TXT, PDF, DOCX, or PPTX files.");
+      }
+    });
+
+    function splitIntoSentences(text) {
+      return text.match(/[^.!?\\n]+[.!?\\n]+/g) || [];
+    }
+
+    function extractKeywords(sentence) {
+      const stopWords = new Set([
+        "the","and","of","in","to","a","is","that","it","with","as","for","was","on","at","by","an",
+        "be","this","which","or","from","but","not","are","have","has","had","they","their","we",
+        "our","you","he","she","him","her","his","hers","its","them","were","will","can"
+      ]);
+      const words = sentence.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
+      const keywords = words.filter(w => !stopWords.has(w));
+      return [...new Set(keywords)].slice(0,4);
+    }
+
+    function generateOptions(answer) {
+      const dummyWords = [
+        "structure", "function", "analysis", "system", "method",
+        "process", "variable", "energy", "element", "component",
+        "concept", "formula", "theory", "example", "application",
+        "phenomenon", "reaction", "equation", "model", "measurement"
+      ];
+      const optionsSet = new Set();
+      optionsSet.add(answer.toLowerCase());
+
+      while (optionsSet.size < 4) {
+        const w = dummyWords[Math.floor(Math.random() * dummyWords.length)];
+        if (!optionsSet.has(w)) optionsSet.add(w);
+      }
+      const options = Array.from(optionsSet);
+      for (let i = options.length -1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function generateQuiz(text, questionCount) {
+      if (!text.trim()) return [];
+      const sentences = splitIntoSentences(text);
+      const quizQuestions = [];
+      for (let i=0; i < sentences.length && quizQuestions.length < questionCount; i++) {
+        const sentence = sentences[i].trim();
+        if (sentence.length < 25) continue;
+        const keywords = extractKeywords(sentence);
+        if (keywords.length === 0) continue;
+        const answer = keywords[0];
+        const regex = new RegExp("\\b" + answer + "\\b", "i");
+        const questionText = sentence.replace(regex, '_____');
+        quizQuestions.push({
+          question: questionText,
+          answer: answer,
+          options: generateOptions(answer)
+        });
+      }
+      return quizQuestions;
+    }
+
+    function renderQuiz(quizQuestions) {
+      quizOutput.innerHTML = "";
+      answerKeyDiv.style.display = 'none';
+      answerKeyDiv.innerHTML = '';
+      checkBtn.style.display = "inline-block";
+      showAnswersBtn.style.display = "none";
+      saveBtn.disabled = true;
+      saveNameInput.value = '';
+      userAnswered = false;
+      currentQuiz = quizQuestions;
+
+      if (quizQuestions.length === 0) {
+        quizOutput.innerHTML = "<p>No quiz questions could be generated from the provided material.</p>";
+        checkBtn.style.display = "none";
+        saveBtn.disabled = true;
+        return;
+      }
+
+      quizQuestions.forEach((q, i) => {
+        const container = document.createElement('div');
+        container.className = "question";
+
+        const qTitle = document.createElement('h3');
+        qTitle.textContent = `Q${i+1}: ${q.question}`;
+        container.appendChild(qTitle);
+
+        const list = document.createElement('ul');
+        list.className = "options-list";
+
+        q.options.forEach((opt) => {
+          const item = document.createElement('li');
+
+          const label = document.createElement('label');
+          label.style.cursor = "pointer";
+
+          const input = document.createElement('input');
+          input.type = "radio";
+          input.name = `q${i+1}`;
+          input.value = opt;
+          input.setAttribute('aria-label', opt);
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(opt));
+          item.appendChild(label);
+          list.appendChild(item);
+        });
+
+        container.appendChild(list);
+        quizOutput.appendChild(container);
+      });
+      quizOutput.scrollIntoView({behavior: 'smooth'});
+    }
+
+    function checkAnswers() {
+      let score = 0;
+      for (let i = 0; i < currentQuiz.length; i++) {
+        const options = document.getElementsByName(`q${i+1}`);
+        let selected = null;
+        for (const option of options) {
+          if (option.checked) {
+            selected = option.value;
+            break;
+          }
+        }
+        if (selected && selected.toLowerCase() === currentQuiz[i].answer.toLowerCase()) score++;
+      }
+      const total = currentQuiz.length;
+
+      alert(`You scored ${score} out of ${total} (${((score/total)*100).toFixed(1)}%)`);
+      userAnswered = true;
+      updateSaveBtnState();
+
+      showAnswersBtn.style.display = "inline-block";
+      checkBtn.style.display = "none";
+      showAnswersBtn.scrollIntoView({behavior: 'smooth'});
+    }
+
+    function renderAnswerKey(quizQuestions) {
+      answerKeyDiv.style.display = 'block';
+      answerKeyDiv.innerHTML = '<h2>Answer Key</h2>';
+      const ul = document.createElement('ul');
+      quizQuestions.forEach((q, i) => {
+        const li = document.createElement('li');
+        li.textContent = `Q${i+1}: ${q.answer}`;
+        ul.appendChild(li);
+      });
+      answerKeyDiv.appendChild(ul);
+      answerKeyDiv.scrollIntoView({behavior: 'smooth'});
+      showAnswersBtn.style.display = "none";
+    }
+
+    function resetQuizUI() {
+      quizOutput.innerHTML = "";
+      answerKeyDiv.style.display = 'none';
+      answerKeyDiv.innerHTML = '';
+      checkBtn.style.display = "none";
+      showAnswersBtn.style.display = "none";
+      saveBtn.disabled = true;
+      saveNameInput.value = '';
+      userAnswered = false;
+      currentQuiz = [];
+    }
+
+    // LocalStorage Save/Load handling
+    const STORAGE_KEY = 'saved_quizzes_ai_quiz_generator';
+
+    function saveQuiz(name, quiz) {
+      if (!name) {
+        alert('Please enter a name for saving your quiz.');
+        return;
+      }
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      saved[name] = quiz;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      alert(`Quiz "${name}" saved successfully.`);
+      saveNameInput.value = '';
+      saveBtn.disabled = true;
+      renderSavedQuizzes();
+    }
+
+    function loadSavedQuiz(name) {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      if (!saved[name]) {
+        alert('Saved quiz not found.');
+        return;
+      }
+      resetQuizUI();
+      currentQuiz = saved[name];
+      renderQuiz(currentQuiz);
+    }
+
+    function deleteSavedQuiz(name) {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      if (!saved[name]) return;
+      if (!confirm(`Are you sure you want to delete quiz "${name}"?`)) return;
+      delete saved[name];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      renderSavedQuizzes();
+    }
+
+    function renderSavedQuizzes() {
+      savedQuizzesList.innerHTML = '';
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const names = Object.keys(saved);
+      if (names.length === 0) {
+        savedQuizzesList.innerHTML = '<li>No saved quizzes found.</li>';
+        return;
+      }
+      names.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        // container to hold buttons
+        const btnContainer = document.createElement('span');
+
+        const loadBtn = document.createElement('button');
+        loadBtn.textContent = 'Load';
+        loadBtn.title = `Load quiz: ${name}`;
+        loadBtn.onclick = () => loadSavedQuiz(name);
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.title = `Delete quiz: ${name}`;
+        delBtn.style.marginLeft = '0.5em';
+        delBtn.onclick = () => deleteSavedQuiz(name);
+
+        btnContainer.appendChild(loadBtn);
+        btnContainer.appendChild(delBtn);
+        li.appendChild(btnContainer);
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.style.alignItems = 'center';
+
+        savedQuizzesList.appendChild(li);
+      });
+    }
+
+    generateBtn.addEventListener('click', () => {
+      resetQuizUI();
+      quizOutput.innerHTML = "<p>Generating quiz. This might take a short moment...</p>";
+      const text = textInput.value.trim();
+      const questionCount = parseInt(quizLengthSelect.value, 10) || 20;
+      setTimeout(() => {
+        const quiz = generateQuiz(text, questionCount);
+        renderQuiz(quiz);
+      }, 300);
+    });
+
+    checkBtn.addEventListener('click', () => {
+      checkAnswers();
+    });
+
+    showAnswersBtn.addEventListener('click', () => {
+      renderAnswerKey(currentQuiz);
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const name = saveNameInput.value.trim();
+      if (!name) {
+        alert('Please enter a name for the quiz before saving.');
+        return;
+      }
+      if (currentQuiz.length === 0) {
+        alert('No quiz to save. Please generate a quiz first.');
+        return;
+      }
+      if (!userAnswered) {
+        alert('Please check your answers before saving the quiz.');
+        return;
+      }
+      saveQuiz(name, currentQuiz);
+    });
+
+    updateGenerateBtnState();
+    renderSavedQuizzes();
+
+  </script>
+</body>
+</html>
+

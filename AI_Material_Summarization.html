@@ -1,0 +1,381 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Study Summarizer - Multi File Upload</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+  h1 {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+  p.subtitle {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #d8d8d8;
+    max-width: 720px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .file-upload-container {
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  label[for="fileInput"] {
+    background-color: #ff6f91;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(255,111,145,0.6);
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    user-select: none;
+  }
+  label[for="fileInput"]:hover {
+    background-color: #ff3c69;
+  }
+  input[type="file"] {
+    display: none;
+  }
+  #fileName {
+    user-select: none;
+    font-size: 0.9rem;
+    color: #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 350px;
+  }
+  #loadingStatus {
+    font-size: 0.9rem;
+    color: #eee;
+    margin-top: 0.25rem;
+    min-height: 1.2em;
+    max-width: 350px;
+  }
+  textarea {
+    width: 100%;
+    max-width: 720px;
+    height: 150px;
+    border-radius: 12px;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    resize: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    outline: none;
+    background-color: rgba(255 255 255 / 0.9);
+    color: #222;
+    flex-shrink: 0;
+  }
+  button {
+    margin-top: 1rem;
+    background-color: #ff6f91;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.6rem;
+    font-size: 1.1rem;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(255,111,145,0.6);
+    transition: background-color 0.3s ease;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  button:hover {
+    background-color: #ff3c69;
+  }
+  #summary {
+    margin-top: 1.5rem;
+    max-width: 720px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1.5rem 2rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    font-size: 1.15rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    min-height: 80px;
+    color: #fff;
+    overflow-y: auto;
+    flex-grow: 1;
+    width: 100%;
+    max-height: calc(100vh - 460px);
+  }
+  footer {
+    margin-top: 1.5rem;
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
+    color: #ccc;
+    flex-shrink: 0;
+  }
+  @media (max-width: 768px) {
+    textarea {
+      height: 120px;
+    }
+    .file-upload-container {
+      justify-content: center;
+    }
+    #fileName, #loadingStatus {
+      max-width: 100%;
+    }
+    #summary {
+      max-height: calc(100vh - 420px);
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>AI Study Summarizer</h1>
+  <p class="subtitle">Paste your study material below or upload a PDF, DOCX, PPT, or TXT file, then get a concise summary of the important details.</p>
+  
+  <div class="file-upload-container">
+    <label for="fileInput" title="Upload a file (PDF, DOCX, PPT, TXT)">📁 Upload File</label>
+    <input type="file" id="fileInput" accept=".txt,.pdf,.docx,.ppt,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain" />
+    <div>
+      <div id="fileName" aria-live="polite" aria-atomic="true"></div>
+      <div id="loadingStatus" aria-live="polite" aria-atomic="true"></div>
+    </div>
+  </div>
+
+  <textarea id="inputText" placeholder="Paste your text here..." aria-label="Input text area"></textarea>
+  <button id="summarizeBtn" aria-label="Summarize the input text">Summarize</button>
+  <div id="summary" aria-live="polite" aria-label="Summary output"></div>
+
+  <footer>Made to help students study smarter. Enter text and summarize key points.</footer>
+
+  <!-- External libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileName');
+    const loadingStatus = document.getElementById('loadingStatus');
+    const inputText = document.getElementById('inputText');
+    const output = document.getElementById('summary');
+    const summarizeBtn = document.getElementById('summarizeBtn');
+
+    // PDF.js worker configuration
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js";
+
+    // Summarization function
+    function summarizeText(text) {
+      if (!text.trim()) {
+        return "Please enter some text to summarize.";
+      }
+      // Split text into sentences using punctuation followed by space or line break
+      const sentenceEnders = /(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)(\s|\n)/g;
+      let sentences = text.split(sentenceEnders).filter(s => s.trim().length > 20);
+
+      if (sentences.length === 0) {
+        return "Text is too short or unclear for summarization.";
+      }
+
+      const stopWords = new Set([
+        "the", "and", "is", "in", "at", "of", "a", "to", "for", "with", "on", "that",
+        "this", "it", "as", "are", "an", "be", "by", "or", "from", "which", "was",
+        "but", "not", "were", "they", "their", "has", "have", "had", "will", "can",
+        "all", "we", "you", "your", "he", "she", "him", "her", "his", "what", "when",
+        "where", "how", "why", "do", "does", "did", "so", "if", "then", "than"
+      ]);
+
+      const wordFreq = {};
+      const words = text.toLowerCase().match(/\b[a-z]+\b/g) || [];
+
+      words.forEach(word => {
+        if (!stopWords.has(word)) {
+          wordFreq[word] = (wordFreq[word] || 0) + 1;
+        }
+      });
+
+      const sentenceScores = sentences.map(sentence => {
+        let score = 0;
+        const ws = sentence.toLowerCase().match(/\b[a-z]+\b/g) || [];
+        ws.forEach(w => {
+          if (wordFreq[w]) {
+            score += wordFreq[w];
+          }
+        });
+        return { sentence, score };
+      });
+
+      sentenceScores.sort((a, b) => b.score - a.score);
+
+      const topCount = Math.min(3, sentenceScores.length);
+      const summarySentences = sentenceScores.slice(0, topCount).map(s => s.sentence.trim());
+
+      return summarySentences.join(" ");
+    }
+
+    function clearUI() {
+      fileNameSpan.textContent = '';
+      loadingStatus.textContent = '';
+      output.textContent = '';
+      inputText.value = '';
+    }
+
+    function handleTxtFile(file) {
+      loadingStatus.textContent = 'Reading TXT file...';
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        inputText.value = e.target.result;
+        loadingStatus.textContent = 'TXT file loaded.';
+        fileNameSpan.textContent = file.name;
+        output.textContent = '';
+      };
+      reader.onerror = () => {
+        loadingStatus.textContent = 'Error reading TXT file.';
+      };
+      reader.readAsText(file);
+    }
+
+    async function handlePdfFile(file) {
+      loadingStatus.textContent = 'Reading PDF file...';
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+        let textContent = '';
+        for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const content = await page.getTextContent();
+          const strings = content.items.map(item => item.str);
+          textContent += strings.join(' ') + '\n\n';
+        }
+        inputText.value = textContent.trim();
+        loadingStatus.textContent = 'PDF file loaded.';
+        fileNameSpan.textContent = file.name;
+        output.textContent = '';
+      } catch (e) {
+        loadingStatus.textContent = 'Error reading PDF file.';
+        inputText.value = '';
+      }
+    }
+
+    function handleDocxFile(file) {
+      loadingStatus.textContent = 'Reading DOCX file...';
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const arrayBuffer = reader.result;
+        mammoth.extractRawText({arrayBuffer: arrayBuffer})
+          .then(function(result) {
+            inputText.value = result.value.trim();
+            loadingStatus.textContent = 'DOCX file loaded.';
+            fileNameSpan.textContent = file.name;
+            output.textContent = '';
+          })
+          .catch(function(err) {
+            loadingStatus.textContent = 'Error extracting DOCX text.';
+            inputText.value = '';
+          });
+      };
+      reader.onerror = function() {
+        loadingStatus.textContent = 'Error reading DOCX file.';
+        inputText.value = '';
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function handlePptxFile(file) {
+      loadingStatus.textContent = 'Reading PPT/PPTX file (extracting text)...';
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        // PPTX: extract slide text from ppt/slides/slideX.xml
+        let slideTexts = [];
+        const slideFolder = 'ppt/slides/';
+        const slideFiles = Object.keys(zip.files).filter(f => f.startsWith(slideFolder) && f.endsWith('.xml'));
+        for (const slideFile of slideFiles) {
+          const data = await zip.file(slideFile).async("string");
+          // Extract text inside <a:t>...</a:t> tags (PowerPoint text runs)
+          const regex = /<a:t[^>]*>([^<]+)<\/a:t>/g;
+          let match;
+          let slideText = '';
+          while ((match = regex.exec(data)) !== null) {
+            slideText += match[1] + ' ';
+          }
+          slideTexts.push(slideText.trim());
+        }
+        const combinedText = slideTexts.join('\n\n').trim();
+        if (combinedText.length === 0) {
+          loadingStatus.textContent = 'No text found in PPT file.';
+          inputText.value = '';
+          output.textContent = '';
+        } else {
+          inputText.value = combinedText;
+          loadingStatus.textContent = 'PPT file loaded.';
+          output.textContent = '';
+        }
+        fileNameSpan.textContent = file.name;
+      } catch (e) {
+        loadingStatus.textContent = 'Error reading PPT/PPTX file.';
+        inputText.value = '';
+        output.textContent = '';
+        fileNameSpan.textContent = file.name;
+      }
+    }
+
+    fileInput.addEventListener('change', async (e) => {
+      clearUI();
+      const file = e.target.files[0];
+      if (!file) return;
+
+      fileNameSpan.textContent = file.name;
+      output.textContent = '';
+      try {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'txt') {
+          handleTxtFile(file);
+        } else if (ext === 'pdf') {
+          await handlePdfFile(file);
+        } else if (ext === 'docx') {
+          handleDocxFile(file);
+        } else if (ext === 'ppt' || ext === 'pptx') {
+          await handlePptxFile(file);
+        } else {
+          loadingStatus.textContent = `Unsupported file type: .${ext}`;
+          inputText.value = '';
+        }
+      } catch (error) {
+        loadingStatus.textContent = 'Error processing file.';
+        inputText.value = '';
+      }
+    });
+
+    summarizeBtn.addEventListener('click', () => {
+      output.textContent = "Summarizing...";
+      setTimeout(() => {
+        const summary = summarizeText(inputText.value);
+        output.textContent = summary;
+      }, 200);
+    });
+  </script>
+</body>
+</html>

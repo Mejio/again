@@ -1,0 +1,68 @@
+body {
+    background-color: #f0f5f9;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  .App-header {
+    background-color: #b3d9ff;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .dashboard {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .study-progress, .focus-tools {
+    width: 45%;
+  }
+  
+  .progress-bar {
+    background-color: #e0e0e0;
+    height: 10px;
+    margin-top: 10px;
+  }
+  
+  .progress-bar div {
+    background-color: #a3d3f4;
+    height: 100%;
+  }
+  
+  .study-timer {
+    width: 45%;
+    background-color: #e2f0d9;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  button {
+    background-color: #6fa3f3;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #5697e4;
+  }
+  
+  .study-materials ul {
+    list-style-type: none;
+  }
+  
+  .schedule ul {
+    list-style-type: none;
+  }
+  
+  .achievements {
+    padding: 20px;
+    background-color: #f0f5f9;
+    border-radius: 10px;
+  }
+  

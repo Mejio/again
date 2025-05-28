@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudyMate Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    html, body {
+      overflow: hidden;
+    }
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: #ffffff;
+    }
+    .cartoon-book {
+      border-radius: 20px;
+      transition: transform 0.3s ease;
+      filter: saturate(1.0) contrast(1.1) brightness(1.0);
+      image-rendering: auto;
+    }
+    .cartoon-book:hover {
+      transform: scale(1.05) rotate(-2deg);
+    }
+    .study-mate-text {
+      font-weight: 700;
+      font-size: 1.5rem; /* text-5xl approx */
+      background: linear-gradient(90deg, #000000 0%, #2563eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      user-select: none;
+    }
+  </style>
+  <style>
+    /* Highlight selected date with ring and shadow */
+    .selected-date {
+      box-shadow: 0 0 0 3px #d1dfff; /* purple ring */
+      border-radius: 9px; /* full rounded */
+      background-color: #4b7ff1; /* purple-500 background */
+      color: white !important;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+  <header class="flex items-center justify-between border-b border-gray-300 px-4 sm:px-6 md:px-10 py-3">
+      <div class="flex items-center space-x-0">
+        <img alt="Clear cartoon style open book with bright orange and blue pages, thick outlines and simplified shapes" class="cartoon-book w-12 h-auto" src="https://storage.googleapis.com/a1aa/image/1d895380-bc86-4e62-44af-0053320c44d6.jpg"/>
+        <span class="study-mate-text">
+          StudyMate
+        </span>
+      </div>
+    <nav id="nav-links" class="hidden md:flex justify-center flex-1 space-x-12 text-gray-00 text-m font-normal"></nav>
+    <div class="flex items-center space-x-6 text-gray-600 text-lg">
+      <button aria-label="Notifications" class="hover:text-gray-900">
+        <i class="far fa-bell"></i>
+      </button>
+      <button aria-label="User Account" class="hover:text-gray-900">
+        <i class="far fa-user"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex flex-col md:flex-row max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 py-6 gap-6">
+    <!-- Left Sidebar -->
+    <aside class="flex flex-col space-y-4 md:w-60">
+      <div class="relative inline-block text-left">
+        <button id="upload-button" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" aria-haspopup="true" aria-expanded="true" aria-controls="upload-menu">
+          <i class="fas fa-cloud-upload-alt text-sm mr-2"></i> Upload Materials
+          <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="upload-menu" class="origin-top-right absolute right-0 mt-2 w-60 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-10" role="menu" aria-orientation="vertical" aria-labelledby="upload-button" tabindex="-1">
+          <div class="py-1" role="none">
+            <button type="button" class="upload-option flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-option="file" role="menuitem" tabindex="-1" id="upload-file">
+              <i class="fas fa-folder-open text-blue-600 text-sm mr-2"></i>File
+            </button>
+            <button type="button" class="upload-option flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-option="link" role="menuitem" tabindex="-1" id="upload-link">
+              <i class="fas fa-link text-blue-600 text-sm mr-2"></i>Link
+            </button>
+            <button type="button" class="upload-option flex items-center w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100" data-option="gdrive" role="menuitem" tabindex="-1" id="upload-gdrive">
+            <img alt="Google Drive icon with triangular shape in green, yellow, and blue colors on transparent background" class="w-5 h-6 mr-2" src="https://storage.googleapis.com/a1aa/image/fbc5ff21-41db-4d69-f82c-f78df459647e.jpg" />
+              Google Drive
+            </button>
+            <div class="border-t border-gray-300 my-1"></div>
+            <button type="button" class="upload-option flex items-center w-full text-left px-5 py-2 text-sm text-gray-700 hover:bg-gray-100" data-option="docs" role="menuitem" tabindex="-1" id="upload-docs">
+              <i class="fas fa-file-alt text-blue-600 text-sm mr-3"></i>Docs
+            </button>
+            <button type="button" class="upload-option flex items-center w-full text-left px-5 py-2 text-sm text-gray-700 hover:bg-gray-100" data-option="slides" role="menuitem" tabindex="-1" id="upload-slides">
+              <i class="fas fa-file-alt text-yellow-600 text-sm mr-3"></i>Slides
+            </button>
+            <button type="button" class="upload-option flex items-center w-full text-left px-5 py-2 text-sm text-gray-700 hover:bg-gray-100" data-option="sheets" role="menuitem" tabindex="-1" id="upload-sheets">
+              <i class="fas fa-file-excel text-green-600 text-sm mr-3"></i>Sheets
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <form id="upload-form" class="mt-4 hidden" enctype="multipart/form-data" method="POST" action="/upload">
+        <input id="file-upload" name="file" type="file" accept=".pdf,.doc,.docx" class="hidden" />
+        <input id="link-input" name="link" type="url" placeholder="Enter URL" class="hidden border border-gray-300 rounded-md px-3 py-2 w-full text-sm" />
+        <button id="submit-upload" type="submit" class="mt-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-md py-2 px-4 hidden">Submit</button>
+      </form>
+
+      <script>
+        const uploadButton = document.getElementById('upload-button');
+        const uploadMenu = document.getElementById('upload-menu');
+        const uploadForm = document.getElementById('upload-form');
+        const fileInput = document.getElementById('file-upload');
+        const linkInput = document.getElementById('link-input');
+        const submitButton = document.getElementById('submit-upload');
+
+        // Toggle menu visibility
+        uploadButton.addEventListener('click', () => {
+          uploadMenu.classList.toggle('hidden');
+        });
+
+        // Handle option selection
+        document.querySelectorAll('.upload-option').forEach(button => {
+          button.addEventListener('click', () => {
+            const option = button.getAttribute('data-option');
+            uploadMenu.classList.add('hidden');
+            uploadForm.classList.remove('hidden');
+            submitButton.classList.remove('hidden');
+            fileInput.classList.add('hidden');
+            linkInput.classList.add('hidden');
+            fileInput.value = '';
+            linkInput.value = '';
+
+            if (option === 'file') {
+              fileInput.classList.remove('hidden');
+              submitButton.textContent = 'Upload File';
+            } else if (option === 'link') {
+              linkInput.classList.remove('hidden');
+              submitButton.textContent = 'Submit Link';
+            } else {
+              // For Google Drive, Docs, Slides, Sheets show placeholder alert for now
+              alert(`Integration for ${option} upload is not implemented yet.`);
+              uploadForm.classList.add('hidden');
+              submitButton.classList.add('hidden');
+            }
+          });
+        });
+
+        // Handle form submission with fetch API
+        uploadForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(uploadForm);
+          try {
+          const response = await fetch('/upload', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json'
+              },
+              body: formData
+            });
+            if (response.ok) {
+              // Removed alert for upload success to avoid popup
+              // User can be notified in other ways if needed
+              // User can navigate manually when ready
+            } else {
+              const errorData = await response.json();
+              alert('Upload failed: ' + errorData.message);
+            }
+          } catch (error) {
+            alert('Upload error: ' + error.message);
+          }
+        });
+
+        // Auto-submit file upload on file selection
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files.length > 0) {
+            uploadForm.dispatchEvent(new Event('submit'));
+          }
+        });
+      </script>
+      <button
+        id="create-study-session-btn"
+        class="flex items-center justify-center space-x-2 border border-gray-300 hover:border-gray-400 text-gray-700 text-sm font-normal rounded-md py-2 px-4"
+        type="button"
+      >
+        <i class="far fa-plus-square text-sm"></i>
+        <span>Create Study Session</span>
+      </button>
+
+      <!-- Modal for creating study session -->
+      <div id="study-session-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-md p-6 w-80">
+          <h3 class="text-lg font-semibold mb-4">Create Study Session</h3>
+          <form id="study-session-form" class="space-y-4">
+            <div>
+              <label for="session-title" class="block text-sm font-medium text-gray-700">Title</label>
+              <input type="text" id="session-title" name="title" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label for="session-date" class="block text-sm font-medium text-gray-700">Date</label>
+              <input type="date" id="session-date" name="date" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label for="session-time" class="block text-sm font-medium text-gray-700">Time</label>
+              <input type="time" id="session-time" name="time" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="flex justify-end space-x-2">
+              <button type="button" id="cancel-session-btn" class="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100">Cancel</button>
+              <button type="submit" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Create</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <section
+        class="bg-gray-50 rounded-md p-4 text-gray-700 text-xs leading-tight"
+        aria-label="Progress Overview"
+      >
+        <h3 class="font-semibold text-sm mb-3 select-none">Progress Overview</h3>
+        <div class="flex justify-center mb-3">
+          <svg
+            class="w-20 h-20"
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              stroke="#D1D5DB"
+              stroke-width="10"
+              stroke-dasharray="251.2"
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              stroke="#2563EB"
+              stroke-width="10"
+              stroke-dasharray="188.4"
+              stroke-dashoffset="62.8"
+              stroke-linecap="round"
+              transform="rotate(-90 50 50)"
+            />
+            <text
+              x="50"
+              y="55"
+              text-anchor="middle"
+              font-size="20"
+              fill="#2563EB"
+              font-weight="700"
+              font-family="Inter, sans-serif"
+            >
+              75%
+            </text>
+          </svg>
+        </div>
+        <p class="mb-1 select-none">Current Topic</p>
+        <p class="font-semibold mb-1 select-none">Advanced Mathematics</p>
+        <p class="mb-0 select-none">Time Studied Today</p>
+        <p class="font-semibold select-none">2h 45m</p>
+      </section>
+      <section
+        class="text-gray-700 text-xs leading-tight mt-4"
+        aria-label="Study Tips"
+      >
+        <h3 class="font-semibold text-sm mb-3 select-none">Study Tips</h3>
+        <div class="bg-gray-50 rounded-md p-3 mb-4">
+          <p class="text-yellow-500 text-xs font-semibold flex items-center space-x-1 select-none">
+            <i class="far fa-lightbulb"></i>
+            <span>Tip of the Day</span>
+          </p>
+          <p class="text-gray-700 mt-1 leading-tight select-text">
+            Take regular breaks using the Pomodoro Technique - 25 minutes of focused study followed by a 5-minute break.
+          </p>
+        </div>
+        <ul class="space-y-3">
+          <li class="flex items-start space-x-2">
+            <i class="far fa-eye text-blue-600 mt-1"></i>
+            <p class="select-none">Review your notes within 24 hours to improve retention</p>
+          </li>
+          <li class="flex items-start space-x-2">
+            <i class="fas fa-music text-blue-600 mt-1"></i>
+            <p class="select-none">Use instrumental music to maintain focus</p>
+          </li>
+          <li class="flex items-start space-x-2">
+            <i class="fas fa-chart-line text-blue-600 mt-1"></i>
+            <p class="select-none">Track your progress to stay motivated</p>
+          </li>
+        </ul>
+      </section>
+    </aside>
+
+    <!-- Main Content -->
+    <section class="flex-1 flex flex-col space-y-4">
+      <h2 class="font-bold text-gray-900 text-lg select-none">Welcome back, <span class="font-extrabold">Alex</span></h2>
+
+      <div id="stats-cards" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+      <section>
+      <section class="bg-gray-50 rounded-lg border border-gray-200 p-4 mt-3">
+        <h3 class="font-semibold text-gray-900 text-sm mb-3 select-none">Today's Study Plan</h3>
+        <div id="study-plan" class="space-y-3 h-[370px] overflow-y-auto"></div>
+        </section>
+      </section>
+
+      
+
+      <section>
+        <h3 class="font-semibold text-gray-900 text-sm mb-3 select-none mt-3">Recent Materials</h3>
+        <div id="recent-materials" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+      </section>
+    </section>
+
+    <!-- Right Sidebar -->
+    <aside class="flex flex-col space-y-6 md:w-72">
+      <section
+        class="bg-gray-50 rounded-md p-4 text-gray-700 text-xs leading-tight"
+        aria-label="Focus Enhancement"
+      >
+        <h3 class="font-semibold text-sm mb-3 select-none">Focus Enhancement</h3>
+        <div id="focus-enhancement" class="space-y-3"></div>
+      </section>
+      <section class="flex-1 flex flex-col space-y-6 min-w-0">
+        <section class="bg-gray-50 rounded-lg border border-gray-200 p-4 h-[540px]">
+          <h2 class="font-bold text-gray-900 text-sm select-none mb-3">Course Schedule</h2>
+        <section class="bg-white border border-gray-200 rounded-md p-4 min-h-[200px]">
+          <h3 class="text-xs font-bold text-black-700 mb-3">Monthly Overview</h3>
+          <h4 id="monthYear" class="text-xs font-semibold text-gray-700 text-center mb-2 text-center"></h4>
+          <div id="calendarGrid" class="grid grid-cols-7 gap-2 text-xs text-gray-600 select-none"></div>
+          <script>
+            (function() {
+              const monthYearEl = document.getElementById('monthYear');
+              const calendarGrid = document.getElementById('calendarGrid');
+              const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+
+              let currentDate = new Date();
+              let currentMonth = currentDate.getMonth();
+              let currentYear = currentDate.getFullYear();
+              let today = currentDate.getDate();
+
+              function renderCalendar(year, month) {
+                monthYearEl.textContent = months[month] + ' ' + year;
+                calendarGrid.innerHTML = '';
+
+                // Initialize selectedDate to today on page load
+                calendarGrid.dataset.selectedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(today).padStart(2, '0')}`;
+
+                // After rendering cells, highlight today's date cell
+
+                // First day of month (0=Sun,...)
+                const firstDay = new Date(year, month, 1).getDay();
+
+                // Number of days in month
+                const numDays = new Date(year, month + 1, 0).getDate();
+
+                // Build array of calendar cells (empty or day)
+                const cells = [];
+
+                // Add initial empty cells for offset
+                for (let i = 0; i < firstDay; i++) {
+                  cells.push(null);
+                }
+
+                // Add day numbers
+                for (let day = 1; day <= numDays; day++) {
+                  cells.push(day);
+                }
+
+                // Add trailing empty cells to fill last row to 7 columns
+                const totalCells = cells.length;
+                const trailingCells = (7 - (totalCells % 7)) % 7;
+                for (let i = 0; i < trailingCells; i++) {
+                  cells.push(null);
+                }
+
+                // Find the index of day 10
+                const day10Index = cells.indexOf(10);
+
+                // Calculate the row of day 10 (0-based)
+                const day10Row = Math.floor(day10Index / 7);
+
+                // Calculate start and end index of that row
+                const rowStart = day10Row * 7;
+                const rowEnd = rowStart + 7;
+
+                // Extract the row cells
+                const rowCells = cells.slice(rowStart, rowEnd);
+
+                // Count how many days (non-null) in that row
+                const daysInRow = rowCells.filter(cell => cell !== null).length;
+
+                // Calculate how many empty cells needed to center the days in 7 columns
+                const emptyCellsBefore = Math.floor((7 - daysInRow) / 2);
+
+                // Build new row with empty cells before days to center them
+                const newRow = [];
+
+                for (let i = 0; i < emptyCellsBefore; i++) {
+                  newRow.push(null);
+                }
+
+                rowCells.forEach(cell => {
+                  if (cell !== null) {
+                    newRow.push(cell);
+                  }
+                });
+
+                // Fill the rest of the row with empty cells if needed
+                while (newRow.length < 7) {
+                  newRow.push(null);
+                }
+
+                // Replace the original row in cells with newRow
+                for (let i = 0; i < 7; i++) {
+                  cells[rowStart + i] = newRow[i];
+                }
+
+              // Render all cells
+              cells.forEach(cell => {
+                const dayCell = document.createElement('div');
+                dayCell.classList.add('text-center', 'py-1');
+                if (cell === today && year === currentYear && month === currentMonth) {
+                  dayCell.innerHTML = '<div class="bg-blue-600 text-white rounded-md w-5 h-4 flex items-center justify-center mx-auto cursor-pointer selected-date" style="line-height: 1">' + cell + '</div>';
+                  dayCell.firstChild.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(cell).padStart(2, '0')}`;
+                } else if (cell !== null) {
+                  dayCell.textContent = cell;
+                  dayCell.classList.add('cursor-pointer');
+                  dayCell.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(cell).padStart(2, '0')}`;
+                } else {
+                  // Empty cell
+                  dayCell.textContent = '';
+                }
+                calendarGrid.appendChild(dayCell);
+              });
+
+              // Highlight today's date cell on initial render
+              const todayCell = calendarGrid.querySelector('[data-date="' + calendarGrid.dataset.selectedDate + '"]');
+              if (todayCell) {
+                todayCell.classList.add('selected-date');
+              }
+
+              // Add click event listener to calendarGrid for date filtering and highlight
+              calendarGrid.addEventListener('click', (event) => {
+                const target = event.target.closest('div[data-date]');
+                if (!target) return;
+
+                const selectedDate = target.dataset.date;
+                const prevSelected = calendarGrid.querySelector('.selected-date');
+
+                // Get today's date in YYYY-MM-DD format
+                const today = new Date();
+                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+                if (calendarGrid.dataset.selectedDate === selectedDate) {
+                  // Clear filter if same date clicked again
+                  calendarGrid.dataset.selectedDate = '';
+                  if (prevSelected) {
+                    prevSelected.classList.remove('selected-date');
+                  }
+                  renderUpcomingEvents();
+                  // Removed loading study sessions to prevent them appearing in Today's Study Plan
+                  // loadStudySessions();
+                } else {
+                  calendarGrid.dataset.selectedDate = selectedDate;
+                  if (prevSelected) {
+                    prevSelected.classList.remove('selected-date');
+                  }
+                  target.classList.add('selected-date');
+                  // If selected date is today, show all sessions
+                  if (selectedDate === todayStr) {
+                    renderUpcomingEvents();
+                  } else {
+                    renderUpcomingEvents(selectedDate);
+                  }
+                  // Removed loading study sessions to prevent them appearing in Today's Study Plan
+                  // loadStudySessions();
+                }
+              });
+              }
+
+              renderCalendar(currentYear, currentMonth);
+            })();
+          </script>
+        </section>
+            <div class="bg-white border border-gray-200 rounded-md p-4 mt-5 overflow-y-auto" style="max-height: 215px; height: calc(540px - 200px);">
+              <h3 class="text-xs font-semibold text-gray-700 mb-3">Upcoming Events</h3>
+          <ul id="upcoming-events-list" class="space-y-4 text-xs text-gray-800">
+            <li class="flex items-start space-x-2">
+          <script>
+            // Render study sessions in Upcoming Events list
+            const upcomingEventsList = document.getElementById('upcoming-events-list');
+
+            // Unified renderUpcomingEvents function with optional filterDate
+            function renderUpcomingEvents(filterDate) {
+              console.log('Rendering upcoming events for date:', filterDate);
+              upcomingEventsList.innerHTML = '';
+              const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+              console.log('All sessions:', sessions);
+              const filteredSessions = filterDate
+                ? sessions.filter(session => {
+                    console.log('Comparing session date:', session.date, 'with filterDate:', filterDate);
+                    return session.date === filterDate;
+                  })
+                : sessions;
+
+              filteredSessions.forEach(({ title, date, time }) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start space-x-2';
+
+                const icon = document.createElement('i');
+                icon.className = 'far fa-calendar-alt text-blue-600 mt-1';
+
+                const div = document.createElement('div');
+
+                const titleP = document.createElement('p');
+                titleP.className = 'font-semibold leading-tight';
+                titleP.textContent = title;
+
+                const dateP = document.createElement('p');
+                dateP.className = 'text-gray-500 leading-tight flex items-center space-x-1';
+
+                // Construct date string from session.date and session.time
+                const dateString = `${date}T${time}`;
+                const sessionTime = new Date(dateString);
+                const formattedDate = sessionTime.toLocaleString([], { weekday: 'long', hour: '2-digit', minute: '2-digit' });
+
+                dateP.innerHTML = `<i class="far fa-clock text-gray-400"></i> <span>${formattedDate}</span>`;
+
+                div.appendChild(titleP);
+                div.appendChild(dateP);
+
+                li.appendChild(icon);
+                li.appendChild(div);
+
+                upcomingEventsList.appendChild(li);
+              });
+            }
+
+            // Initial render without filter
+            renderUpcomingEvents();
+          </script>
+            </div>
+          </div>
+        </section>
+        </section>
+      </section>
+    </aside>
+    </aside>
+  </main>
+
+  <script>
+    const focusEnhancement = [
+      { title: "Deep Focus", duration: "2h 30m", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+      { title: "Study Beats", duration: "1h 45m", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+      { title: "Nature Sounds", duration: "1h", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+    ];
+    const focusContainer = document.getElementById("focus-enhancement");
+    let currentAudio = null;
+    const audioElements = [];
+    const iconDivs = [];
+    focusEnhancement.forEach(({ title, duration, audioUrl }) => {
+        const container = document.createElement("div");
+        container.className = "flex items-center space-x-3 bg-blue-50 rounded-md py-2 px-3 w-full";
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "flex items-center space-x-3 text-left flex-grow";
+
+        const iconDiv = document.createElement("div");
+        iconDiv.className = "flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs";
+        iconDiv.innerHTML = '<i class="fas fa-play"></i>';
+
+        const textDiv = document.createElement("div");
+        const titleP = document.createElement("p");
+        titleP.className = "font-semibold text-xs text-gray-900 select-none";
+        titleP.textContent = title;
+        const durationP = document.createElement("p");
+        durationP.className = "text-xs text-gray-500 select-none";
+        durationP.textContent = duration;
+
+        textDiv.appendChild(titleP);
+        textDiv.appendChild(durationP);
+
+        button.appendChild(iconDiv);
+        button.appendChild(textDiv);
+
+        const audio = new Audio(audioUrl);
+        audio.loop = true;
+        audio.volume = 0.5; // default volume
+
+        audioElements.push(audio);
+        iconDivs.push(iconDiv);
+
+        button.addEventListener('click', () => {
+            if (audio.paused) {
+                // Pause all other audios and reset their icons
+                audioElements.forEach((aud, idx) => {
+                    if (aud !== audio) {
+                        aud.pause();
+                        aud.currentTime = 0;
+                        iconDivs[idx].innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                });
+                audio.play();
+                currentAudio = audio;
+                iconDiv.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                audio.pause();
+                iconDiv.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+
+        // Volume slider
+        const volumeSlider = document.createElement("input");
+        volumeSlider.type = "range";
+        volumeSlider.min = 0;
+        volumeSlider.max = 1;
+        volumeSlider.step = 0.01;
+        volumeSlider.value = audio.volume;
+        volumeSlider.className = "w-20 h-5 cursor-pointer";
+        volumeSlider.title = "Volume";
+
+        volumeSlider.addEventListener("input", () => {
+            audio.volume = volumeSlider.value;
+        });
+
+        container.appendChild(button);
+        container.appendChild(volumeSlider);
+
+        focusContainer.appendChild(container);
+    });
+
+    // Navigation links data
+    const navLinks = [
+      { text: "Dashboard", href: "index_with_music.html" },
+      { text: "Materials", href: "materials.html" },
+      { text: "Quizzes", href: "quizzes.html" },
+      { text: "Study Steps", href: "studysteps.html" },
+    ];
+
+    const navContainer = document.getElementById("nav-links");
+    navLinks.forEach(({ text, href }) => {
+      const a = document.createElement("a");
+      a.href = href;
+      a.textContent = text;
+      a.className = "hover:text-gray-900";
+      navContainer.appendChild(a);
+    });
+
+    // Stats cards data
+    const stats = [
+      {
+        iconClass: "far fa-clock",
+        label: "Study Hours",
+        value: "24h",
+        sublabel: "This Week",
+      },
+      {
+        iconClass: "far fa-check-circle",
+        label: "Completed",
+        value: "12",
+        sublabel: "Topics",
+      },
+      {
+        iconClass: "far fa-star",
+        label: "Quiz Score",
+        value: "85%",
+        sublabel: "Average",
+      },
+      {
+        iconClass: "fas fa-tint",
+        label: "Study Streak",
+        value: "7",
+        sublabel: "Days",
+      },
+    ];
+
+    const statsContainer = document.getElementById("stats-cards");
+    stats.forEach(({ iconClass, label, value, sublabel }) => {
+      const card = document.createElement("div");
+      card.className = "border border-gray-200 rounded-md p-4 flex flex-col space-y-1";
+
+      const icon = document.createElement("div");
+      icon.className = "text-blue-600 text-lg";
+      icon.innerHTML = `<i class="${iconClass}"></i>`;
+
+      const labelP = document.createElement("p");
+      labelP.className = "text-xs text-gray-500 select-none";
+      labelP.textContent = label;
+
+      const valueP = document.createElement("p");
+      valueP.className = "font-bold text-base select-none";
+      valueP.textContent = value;
+
+      const sublabelP = document.createElement("p");
+      sublabelP.className = "text-xs text-gray-400 select-none";
+      sublabelP.textContent = sublabel;
+
+      card.appendChild(icon);
+      card.appendChild(labelP);
+      card.appendChild(valueP);
+      card.appendChild(sublabelP);
+
+      statsContainer.appendChild(card);
+    });
+
+    // Today's Study Plan data
+
+    const studyPlanContainer = document.getElementById("study-plan");
+
+    // Fetch uploaded materials and add to study plan
+    async function fetchAndRenderStudyPlan() {
+      try {
+        const response = await fetch('http://localhost:5000/materials');
+        if (!response.ok) {
+          throw new Error('Failed to fetch materials');
+        }
+        const materials = await response.json();
+
+        // Map uploaded materials to study plan items
+          const uploadedItems = materials.map(material => ({
+            time: "Uploaded",
+            meridian: "",
+            subject: "Uploaded Material",
+            topic: material.title,
+            duration: "-",
+            buttonText: "Start",
+            buttonColor: "bg-green-600 hover:bg-green-700",
+            url: 'http://localhost:5000' + material.url,
+          }));
+
+        // Clear existing study plan container
+        studyPlanContainer.innerHTML = '';
+
+        uploadedItems.forEach(({ time, meridian, subject, topic, duration, buttonText, buttonColor, url }) => {
+          const container = document.createElement("div");
+          container.className = "bg-white border border-white-200 rounded-md p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between ";
+
+          const left = document.createElement("div");
+          left.className = "flex items-center space-x-3 mb-2 sm:mb-0";
+
+          const timeSpan = document.createElement("span");
+          timeSpan.className = "text-xs text-gray-600 select-none";
+          timeSpan.innerHTML = `${time} <span class="font-normal">${meridian}</span>`;
+
+          const subjectDiv = document.createElement("div");
+          const subjectContainer = document.createElement("div");
+          subjectContainer.className = "max-w-[300px] overflow-hidden";
+
+          const subjectP = document.createElement("p");
+          subjectP.className = "font-semibold text-sm text-gray-900 select-none truncate";
+          subjectP.textContent = subject;
+
+          const topicP = document.createElement("p");
+          topicP.className = "text-xs text-gray-500 select-none truncate";
+          topicP.textContent = topic;
+
+          subjectContainer.appendChild(subjectP);
+          subjectContainer.appendChild(topicP);
+
+        // left.appendChild(timeSpan);
+        left.appendChild(subjectContainer);
+
+          const right = document.createElement("div");
+          right.className = "flex items-center space-x-4";
+
+          const durationSpan = document.createElement("span");
+          durationSpan.className = "text-xs text-gray-600 select-none";
+          durationSpan.textContent = duration;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `${buttonColor} text-white text-xs font-semibold rounded-md py-1.5 px-4 select-none`;
+          button.textContent = buttonText;
+
+          // Add click handlers for study plan buttons
+          button.addEventListener('click', () => {
+            if (url) {
+              // If url is provided, open the file directly
+              window.open(url, '_blank');
+            } else {
+              // Cycle button text and color: Start -> Continue -> Done, then stay Done
+              if (button.textContent === "Start") {
+                button.textContent = "Continue";
+                button.classList.remove("bg-blue-600", "hover:bg-blue-700");
+                button.classList.add("bg-green-500", "hover:bg-green-600");
+              } else if (button.textContent === "Continue") {
+                button.textContent = "Done";
+                button.classList.remove("bg-green-500", "hover:bg-green-600");
+                button.classList.add("bg-gray-500", "hover:bg-gray-600");
+              } else if (button.textContent === "Done") {
+                // Do nothing, stay Done
+                return;
+              }
+            }
+          });
+
+          right.appendChild(durationSpan);
+          right.appendChild(button);
+
+          container.appendChild(left);
+          container.appendChild(right);
+
+          studyPlanContainer.appendChild(container);
+        });
+
+        // Load and render study sessions from localStorage for today's date
+        function renderTodayStudySessions() {
+          const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+          const today = new Date();
+          const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+          const todaySessions = sessions.filter(session => session.date === todayStr);
+
+          todaySessions.forEach(({ title, date, time }) => {
+            const container = document.createElement("div");
+            container.className = "bg-white border border-white-200 rounded-md p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between ";
+
+            const left = document.createElement("div");
+            left.className = "flex items-center space-x-3 mb-2 sm:mb-0";
+
+            const subjectContainer = document.createElement("div");
+            subjectContainer.className = "max-w-[300px] overflow-hidden";
+
+            const subjectP = document.createElement("p");
+            subjectP.className = "font-semibold text-sm text-gray-900 select-none truncate";
+            subjectP.textContent = "Study Session";
+
+            const topicP = document.createElement("p");
+            topicP.className = "text-xs text-gray-500 select-none truncate";
+            topicP.textContent = title;
+
+            subjectContainer.appendChild(subjectP);
+            subjectContainer.appendChild(topicP);
+
+            left.appendChild(subjectContainer);
+
+            const right = document.createElement("div");
+            right.className = "flex items-center space-x-4";
+
+            const durationSpan = document.createElement("span");
+            durationSpan.className = "text-xs text-gray-600 select-none";
+            durationSpan.textContent = "-";
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md py-1.5 px-4 select-none";
+            button.textContent = "Start";
+
+            button.addEventListener("click", () => {
+              alert(`Starting study session: ${title}`);
+            });
+
+            right.appendChild(durationSpan);
+            right.appendChild(button);
+
+            container.appendChild(left);
+            container.appendChild(right);
+
+            studyPlanContainer.appendChild(container);
+          });
+        }
+
+        // Call renderTodayStudySessions after rendering uploaded materials
+        renderTodayStudySessions();
+
+      } catch (error) {
+        console.error('Error fetching materials:', error);
+        // Fallback: clear study plan container
+        studyPlanContainer.innerHTML = '';
+      }
+    }
+
+      // Initial call to fetch and render study plan
+      fetchAndRenderStudyPlan();
+      
+      // Recent Materials data
+      const recentMaterials = [
+        {
+          title: "Calculus Notes",
+          date: "Jan 15, 2024",
+          type: "PDF",
+          progress: 70,
+        },
+        {
+          title: "Physics Formulas",
+          date: "Jan 14, 2024",
+          type: "PDF",
+          progress: 90,
+        },
+        {
+          title: "Chemistry Lab",
+          date: "Jan 13, 2024",
+          type: "Document",
+          progress: 30,
+        },
+      ];
+      
+      const recentMaterialsContainer = document.getElementById("recent-materials");
+      recentMaterials.forEach(({ title, date, type, progress }) => {
+        const article = document.createElement("article");
+        article.className = "border border-gray-200 rounded-md p-3 flex flex-col space-y-1";
+        article.setAttribute("aria-label", `${title} ${type}`);
+      
+        const topRow = document.createElement("div");
+        topRow.className = "flex justify-between items-center";
+      
+        const titleP = document.createElement("p");
+        titleP.className = "font-semibold text-sm text-gray-900 select-none";
+        titleP.textContent = title;
+      
+        const dateP = document.createElement("p");
+        dateP.className = "text-xs text-gray-500 select-none";
+        dateP.textContent = date;
+      
+        topRow.appendChild(titleP);
+        topRow.appendChild(dateP);
+      
+        const typeP = document.createElement("p");
+        typeP.className = "text-xs text-gray-500 select-none";
+        typeP.textContent = type;
+      
+        const progressBarBg = document.createElement("div");
+        progressBarBg.className = "w-full bg-gray-200 rounded-full h-2 mt-1";
+      
+        const progressBar = document.createElement("div");
+        progressBar.className = "bg-blue-600 h-2 rounded-full";
+        progressBar.style.width = progress + "%";
+      
+        progressBarBg.appendChild(progressBar);
+      
+        article.appendChild(topRow);
+        article.appendChild(typeP);
+        article.appendChild(progressBarBg);
+      
+        // Add click handler for recent materials
+        article.addEventListener('click', () => {
+          alert(`Clicked on material: ${title}`);
+          // Add navigation or other logic here
+        });
+      
+        recentMaterialsContainer.appendChild(article);
+      });
+      </script>
+      
+      <script>
+        // Modal and form handling for Create Study Session
+        const createSessionBtn = document.getElementById('create-study-session-btn');
+        const modal = document.getElementById('study-session-modal');
+        const cancelBtn = document.getElementById('cancel-session-btn');
+        const form = document.getElementById('study-session-form');
+        // Removed duplicate declaration of studyPlanContainer here
+      
+        // Add a study session element to the DOM
+        function addStudySessionToDOM(title, date, time) {
+          const formattedDate = new Date(date + 'T' + time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+      
+          const container = document.createElement('div');
+          container.className = 'bg-white border border-white-200 rounded-md p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between';
+      
+          const left = document.createElement('div');
+          left.className = 'flex items-center space-x-3 mb-2 sm:mb-0';
+      
+          const timeSpan = document.createElement('span');
+          // Removed the timeSpan element as per user request to not connect or show date/time here
+          // timeSpan.className = 'text-xs text-gray-600 select-none';
+          // timeSpan.textContent = formattedDate;
+      
+          const subjectContainer = document.createElement('div');
+          subjectContainer.className = 'max-w-[300px] overflow-hidden';
+      
+          const subjectP = document.createElement('p');
+          subjectP.className = 'font-semibold text-sm text-gray-900 select-none truncate';
+          subjectP.textContent = 'Study Session';
+      
+          const topicP = document.createElement('p');
+          topicP.className = 'text-xs text-gray-500 select-none truncate';
+          topicP.textContent = title;
+      
+          subjectContainer.appendChild(subjectP);
+          subjectContainer.appendChild(topicP);
+      
+          left.appendChild(timeSpan);
+          left.appendChild(subjectContainer);
+      
+          const right = document.createElement('div');
+          right.className = 'flex items-center space-x-4';
+      
+          const durationSpan = document.createElement('span');
+          durationSpan.className = 'text-xs text-gray-600 select-none';
+          durationSpan.textContent = '-';
+      
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md py-1.5 px-4 select-none';
+          button.textContent = 'Start';
+      
+          button.addEventListener('click', () => {
+            alert(`Starting study session: ${title}`);
+          });
+      
+          right.appendChild(durationSpan);
+          right.appendChild(button);
+      
+          container.appendChild(left);
+          container.appendChild(right);
+      
+          studyPlanContainer.appendChild(container);
+        }
+      
+        createSessionBtn.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+        });
+      
+        cancelBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          form.reset();
+        });
+      
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+        
+            const title = form.title.value.trim();
+            const date = form.date.value;
+            const time = form.time.value;
+        
+            if (!title || !date || !time) {
+              alert('Please fill in all fields.');
+              return;
+            }
+        
+            console.log('Saving study session:', { title, date, time });
+        
+            // Save to localStorage
+            const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+            sessions.push({ title, date, time });
+            localStorage.setItem('studySessions', JSON.stringify(sessions));
+        
+            // Close modal and reset form
+            modal.classList.add('hidden');
+            form.reset();
+
+          // Refresh upcoming events list based on selected date
+          const calendarGrid = document.getElementById('calendarGrid');
+          const selectedDate = calendarGrid.dataset.selectedDate;
+          if (selectedDate) {
+            if (selectedDate === date) {
+              renderUpcomingEvents(selectedDate);
+            } else {
+              renderUpcomingEvents();
+            }
+          } else {
+            renderUpcomingEvents();
+          }
+        });
+
+        // Also refresh Today's Study Plan after adding a new study session
+        fetchAndRenderStudyPlan();
+
+        // Also refresh Today's Study Plan after adding a new study session
+        fetchAndRenderStudyPlan();
+      </script>
+</body>
+</html>

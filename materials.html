@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>Course Materials</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    html, body {
+      overflow: hidden;
+    }
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: #ffffff;
+    }
+    .cartoon-book {
+      border-radius: 20px;
+      transition: transform 0.3s ease;
+      filter: saturate(1.1) contrast(1.1) brightness(1.0);
+      image-rendering: auto;
+    }
+    .cartoon-book:hover {
+      transform: scale(1.05) rotate(-2deg);
+    }
+    .study-mate-text {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #000000 0%, #2563eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      user-select: none;
+    }
+    a.material-link {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+  <header class="flex items-center justify-between border-b border-gray-300 px-4 sm:px-6 md:px-10 py-3">
+    <div class="flex items-center space-x-0">
+      <img alt="Clear cartoon style open book with bright orange and blue pages, thick outlines and simplified shapes" class="cartoon-book w-12 h-auto" src="https://storage.googleapis.com/a1aa/image/1d895380-bc86-4e62-44af-0053320c44d6.jpg"/>
+      <span class="study-mate-text">
+        StudyMate
+      </span>
+    </div>
+    <nav class="hidden md:flex justify-center flex-1 space-x-12 text-gray-00 text-m font-normal">
+      <a class="min-w-[50px] text-center hover:text-gray-900" href="index_with_music.html">Dashboard</a>
+      <a class="min-w-[50px] text-center hover:text-gray-900 font-semibold" href="materials.html">Materials</a>
+      <a class="min-w-[50px] text-center hover:text-gray-900" href="quizzes.html">Quizzes</a>
+      <a class="min-w-[50px] text-center hover:text-gray-900" href="studysteps.html">Study Steps</a>
+    </nav>
+    <div class="flex items-center space-x-6 text-gray-600 text-lg">
+      <button aria-label="Notifications" class="hover:text-gray-900">
+        <i class="far fa-bell"></i>
+      </button>
+      <button aria-label="User Account" class="hover:text-gray-900">
+        <i class="far fa-user"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex flex-col md:flex-row flex-wrap max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 py-6 gap-6 overflow-x-auto">
+    <section class="flex-1 flex flex-col space-y-6 min-w-0">
+      <section class="bg-white rounded-md border border-gray-200 shadow-sm">
+      <button aria-controls="study-progress-content" aria-expanded="false" class="w-full flex items-center justify-between px-4 py-3 text-gray-900 font-semibold text-sm border-b border-gray-200 rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500" type="button" id="toggle-materials">
+        <div class="flex items-center space-x-4">
+          <span>Course Materials</span>
+          
+        </div>
+        <svg aria-hidden="true" class="w-4 h-4 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="arrow-icon">
+          <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      
+        <table class="w-full border border-gray-300 rounded-md text-left text-sm" id="materials-table">
+        <thead class="bg-white-100 text-gray-500 w-full border border-gray-300">
+          <tr>
+<th class="py-3 px-4 font-semibold pl-8">Document Name</th>
+<th class="py-3 px-4 font-semibold text-center">Type</th>
+<th class="py-3 px-4 font-semibold text-center">Date Added</th>
+<th class="py-3 px-4 font-semibold text-center">Size</th>
+<th class="py-3 px-4 font-semibold text-center">Actions</th>
+          </tr>
+        </thead>
+        
+        <tbody id="materials-tbody"></tbody>
+      </table>
+      
+      <table class="w-full mt-4 border border-gray-300 rounded-md text-left text-sm">
+        <tbody>
+          <tr>
+            <td colspan="5" class="py-3 px-4 text-right">
+              <button id="header-generate-quiz" class="text-blue-600 hover:text-blue-800 font-semibold px-2 py-1 rounded border border-blue-600" title="Generate quiz for all materials" type="button">
+            Generate Quiz
+          </button>
+          <button id="header-ai-summarization" class="ml-4 text-green-600 hover:text-green-800 font-semibold px-2 py-1 rounded border border-green-600" title="AI Summarization for all materials" type="button" onclick="window.location.href='AI_Material_Summarization.html'">
+            AI Summarization
+          </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    async function fetchMaterials() {
+      try {
+        const response = await fetch('http://localhost:5000/materials');
+        if (!response.ok) {
+          throw new Error('Failed to fetch materials');
+        }
+        const materials = await response.json();
+        const tbody = document.getElementById('materials-tbody');
+        tbody.innerHTML = '';
+          materials.forEach(material => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-50';
+
+          const tdName = document.createElement('td');
+          tdName.className = 'py-3 flex items-center space-x-4 text-gray-700';  // increased space-x-2 to space-x-4 for more gap
+          const icon = document.createElement('img');
+          icon.className = 'w-4 h-4 flex-shrink-0 ml-4';  // added left margin to move icon further from edge
+          icon.alt = material.type + ' icon';
+          if (material.type === 'PDF') {
+            icon.src = 'https://storage.googleapis.com/a1aa/image/14e9995f-a225-4566-16ba-31327b094c50.jpg';
+          } else if (material.type === 'DOC' || material.type === 'DOCX') {
+            icon.src = 'https://storage.googleapis.com/a1aa/image/08bb1fe3-6b3d-451d-d99c-8ba1a30964cf.jpg';
+          } else if (material.type === 'LINK') {
+            icon.src = 'https://storage.googleapis.com/a1aa/image/fbc5ff21-41db-4d69-f82c-f78df459647e.jpg';
+          } else {
+            icon.src = 'https://storage.googleapis.com/a1aa/image/14e9995f-a225-4566-16ba-31327b094c50.jpg';
+          }
+          const link = document.createElement('a');
+          // Prepend backend URL to material.url to avoid redirect issues
+          const backendUrl = 'http://localhost:5000';
+          link.href = backendUrl + material.url;
+          link.textContent = material.title;
+          link.className = 'material-link';
+          link.target = '_blank';
+          tdName.appendChild(icon);
+          tdName.appendChild(link);
+
+          const tdType = document.createElement('td');
+          tdType.className = 'py-3 text-center font-semibold text-gray-700';
+          tdType.textContent = material.type;
+
+          const tdDate = document.createElement('td');
+          tdDate.className = 'py-3 text-center';
+          tdDate.textContent = material.dateAdded;
+
+          const tdSize = document.createElement('td');
+          tdSize.className = 'py-3 text-center';
+          tdSize.textContent = material.size;
+
+          const tdActions = document.createElement('td');
+          tdActions.className = 'py-3 text-center flex justify-center gap-2';
+
+          const btnRemove = document.createElement('button');
+          btnRemove.className = 'text-red-600 hover:text-red-800';
+          btnRemove.title = 'Remove material';
+          btnRemove.innerHTML = '<i class="fas fa-trash"></i>';
+          btnRemove.addEventListener('click', async () => {
+            try {
+              const response = await fetch(`http://localhost:5000/materials/${material.id}`, {
+                method: 'DELETE'
+              });
+              if (!response.ok) {
+                throw new Error('Failed to delete material');
+              }
+              tr.remove();
+            } catch (error) {
+              alert('Error deleting material: ' + error.message);
+            }
+          });
+
+          const btnGenerateQuiz = document.createElement('button');
+          btnGenerateQuiz.className = 'text-blue-600 hover:text-blue-800 font-semibold px-2 py-1 rounded border border-blue-600';
+          btnGenerateQuiz.title = 'Generate quiz from this material';
+          btnGenerateQuiz.textContent = 'Generate Quiz';
+          btnGenerateQuiz.addEventListener('click', () => {
+            // Redirect to AI_Quiz_Generator.html with material ID as query param
+            window.location.href = `AI_Quiz_Generator.html?materialId=${encodeURIComponent(material.id)}`;
+          });
+
+          // Remove the Generate Quiz button from each row
+          // tdActions.appendChild(btnGenerateQuiz);
+          tdActions.appendChild(btnRemove);
+
+          tr.appendChild(tdName);
+          tr.appendChild(tdType);
+          tr.appendChild(tdDate);
+          tr.appendChild(tdSize);
+          tr.appendChild(tdActions);
+
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Error fetching materials:', error);
+      }
+    }
+
+    fetchMaterials();
+
+    // Add click handler for header generate quiz button
+    document.getElementById('header-generate-quiz').addEventListener('click', () => {
+      // Redirect to AI_Quiz_Generator.html without materialId to generate quiz for all materials
+      window.location.href = 'AI_Quiz_Generator.html';
+    });
+  </script>
+  <script>
+    // Expandable arrow toggle functionality
+    document.getElementById('toggle-materials').addEventListener('click', () => {
+      const materialsTable = document.getElementById('materials-table');
+      const arrowIcon = document.getElementById('arrow-icon');
+      const isExpanded = materialsTable.style.display !== 'none';
+
+      if (isExpanded) {
+        materialsTable.style.display = 'none';
+        arrowIcon.style.transform = 'rotate(-90deg)';
+        document.getElementById('toggle-materials').setAttribute('aria-expanded', 'false');
+      } else {
+        materialsTable.style.display = 'table';
+        arrowIcon.style.transform = 'rotate(0deg)';
+        document.getElementById('toggle-materials').setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Initialize table as collapsed
+    document.getElementById('materials-table').style.display = 'none';
+    document.getElementById('toggle-materials').setAttribute('aria-expanded', 'false');
+    document.getElementById('arrow-icon').style.transform = 'rotate(-90deg)';
+  </script>
+</body>
+</html>
